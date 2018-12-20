@@ -11,6 +11,9 @@ Django App for managing photos based on django-imagekit.
 * Builtin API
 * Exclude duplicate photos
 
+![Django Photos Library screenshot](https://raw.githubusercontent.com/ivan-sysoi/django-photoslib/master/pic1.png)
+
+
 Photos are immutable, that means if you rotate the image a new copy will be created.
 
 
