@@ -3,3 +3,4 @@ include LICENSE
 recursive-include photoslib/ *
 recursive-exclude * *.py[co]
 recursive-exclude * __pycache__
+prune photoslib/static_src
