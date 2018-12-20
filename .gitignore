@@ -1,0 +1,8 @@
+.DS_Store
+.idea
+*.pyc
+photoslib.egg-info
+example_project/db.sqlite3
+example_project/photoslib
+example_project/media
+photoslib/static_src/node_modules

@@ -1,0 +1,77 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Photoslib\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-12-20 20:30+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Ivan Sysoi <ivan.sysoi@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: be\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: photoslib/admin.py:36
+msgid "Thumbnail"
+msgstr "Мініяцюра"
+
+#: photoslib/apps.py:7
+msgid "Photo Library"
+msgstr "Фота бібліятэка"
+
+#: photoslib/fields.py:28
+msgid "Original"
+msgstr "Арыгінал"
+
+#: photoslib/fields.py:41
+msgid "Clear"
+msgstr "Ачысціць"
+
+#: photoslib/fields.py:42
+msgid "Upload Image"
+msgstr "Загрузіць фота"
+
+#: photoslib/fields.py:43
+msgid "Critical error loading photo field"
+msgstr "Крытычная памылка загрузкі фота"
+
+#: photoslib/fields.py:44
+msgid "Error during uploading image"
+msgstr "Памылка пры загрузцы фота"
+
+#: photoslib/models.py:47
+msgid "Created"
+msgstr "Створана"
+
+#: photoslib/models.py:48
+msgid "File"
+msgstr "Файл"
+
+#: photoslib/models.py:49
+msgid "Hash"
+msgstr "Хэш"
+
+#: photoslib/models.py:50
+msgid "Count of references"
+msgstr "Колькасць спасылак"
+
+#: photoslib/models.py:65
+msgid "Photo {}"
+msgstr "Фота {}"
+
+#: photoslib/models.py:69
+msgid "Photo"
+msgstr "Фота"
+
+#: photoslib/models.py:70
+msgid "Photos"
+msgstr "Фатаграфіі"

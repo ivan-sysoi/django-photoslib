@@ -1,0 +1,60 @@
+$transition-time: 0.4s;
+$transition-timing-func: ease-out;
+
+@mixin button-color($bg, $text-color, $hover-bg: null, $disabled-bg: null, $disabled-text: null) {
+  $hover-bg: $hover-bg or darken($bg, 5%);
+  $disabled-bg: $disabled-bg or #c0c0c0;
+  $disabled-text: $disabled-text or darken(#c0c0c0, 20%);
+
+  color: $text-color;
+
+  &:disabled {
+    background-color: $disabled-bg;
+    color: $disabled-text;
+  }
+
+  &:not(:disabled) {
+    background-color: $bg;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: $hover-bg;
+    &:focus {
+      //border: 1px inset $hover-bg;
+      box-shadow: 1px 1px 6px darken($hover-bg, 10%);
+      //border-bottom: 2px solid darken($hover-bg, 10%);
+    }
+  }
+}
+
+@mixin button-size($size, $padding) {
+  font-size: $size;
+  padding: $padding;
+}
+
+.Button {
+  cursor: pointer;
+  outline: none;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color, color, fill $transition-timing-func $transition-time;
+  border: none;
+  border-bottom: 2px solid transparent;
+
+  @include button-color(#fff, #000);
+  @include button-size(14px, 5px);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.Button__Icon {
+  margin-right: 7px;
+}
