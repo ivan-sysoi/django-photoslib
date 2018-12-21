@@ -10,6 +10,7 @@ def read(fname):
     except IOError:
         return ''
 
+
 setup(
     name="django-photoslib",
     version='0.0.1',

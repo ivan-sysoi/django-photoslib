@@ -25,12 +25,6 @@ def is_authenticated(fn):
     return wrapper
 
 
-def is_owned_by_user(user, obj):
-    if settings.PHOTOSLIB_CHECK_OWNERSHIP is not None:
-        return settings.PHOTOSLIB_CHECK_OWNERSHIP(user, obj)
-    return True
-
-
 def get_objects_from_request(single=False):
     def decorator(fn):
         def parse_ids(ids):
@@ -49,9 +43,6 @@ def get_objects_from_request(single=False):
                 ids = parse_ids(ids)
             except (ValueError, KeyError, AssertionError):
                 return HttpResponseBadRequest('Invalid request data')
-
-            # if len(ids) > 100:
-            #     return HttpResponseBadRequest('Too long ids')
 
             qs = Photo.objects.filter(id__in=ids).all()
             if qs.count() != len(ids):

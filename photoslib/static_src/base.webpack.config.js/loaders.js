@@ -1,9 +1,5 @@
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-//const sass = require('node-sass')
-//const colorString = require('color-string')
-
-//const projectConfig = require('./../../../config')
 
 const defaultFileLoader = {
   loader: 'file-loader',
@@ -52,7 +48,7 @@ const svgTransformLoader = {
     defaultFileLoader,
     {
       loader: 'svg-transform-loader',
-    }
+    },
   ],
 }
 
@@ -67,7 +63,7 @@ const imageLoader = {
         disable: true, // webpack@2.x and newer
         mozjpeg: {
           progressive: true,
-          quality: 75
+          quality: 75,
         },
         // optipng.enabled: false will disable optipng
         optipng: {
@@ -75,15 +71,15 @@ const imageLoader = {
         },
         pngquant: {
           quality: '65-90',
-          speed: 4
+          speed: 4,
         },
         gifsicle: {
           interlaced: false,
         },
         // the webp option will enable WEBP
         webp: {
-          quality: 75
-        }
+          quality: 75,
+        },
       },
     },
   ],
@@ -143,7 +139,6 @@ const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => {
           ...(modules ? {
             modules: true,
             importLoaders: 3,
-            //sourceMap: true,
             localIdentName: '[local]--[hash:base64:5]',
           } : {}),
         },
@@ -151,7 +146,6 @@ const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => {
       {
         loader: 'postcss-loader',
         options: {
-          //sourceMap: false,
           config: {
             path: path.resolve(__dirname, '../'),
           },
@@ -167,22 +161,10 @@ const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => {
         loader: 'sass-loader',
         options: {
           sourceMap: true,
-        //  functions: {
-        //    'projectColor($colorId)': ($colorName) => {
-        //
-        //      const color = projectConfig.COLORS_MAP[$colorName.getValue()]
-        //      if (!color) {
-        //        throw Error('Invalid color name: ' + $colorName.getValue())
-        //      }
-        //
-        //      return sass.types.Color(...colorString.get.rgb(color))
-        //    },
-        //  },
         },
       },
     ],
   }
-  //return loader
 }
 
 module.exports = {

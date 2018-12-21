@@ -128,43 +128,34 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-from imagekit import ImageSpec
-from imagekit.processors import Thumbnail
-from imagekit.models import ImageSpecField
+
+def get_photo_sizes():
+    from imagekit import ImageSpec
+    from imagekit.processors import Thumbnail
+    from imagekit.models import ImageSpecField
+
+    class ThumbSpec(ImageSpec):
+        processors = [
+            Thumbnail(150),
+        ]
+        format = 'JPEG'
+        options = {'quality': 70}
+
+    class MediumSpec(ImageSpec):
+        processors = [
+            Thumbnail(600),
+        ]
+        format = 'JPEG'
+        options = {'quality': 70}
+
+    return {
+        'thumb': {
+            'field': ImageSpecField(source='file', spec=ThumbSpec),
+            'name': 'thumbnail',
+        },
+        'medium': ImageSpecField(source='file', spec=MediumSpec),
+    }
 
 
-class ThumbSpec(ImageSpec):
-    processors = [
-        Thumbnail(150),
-    ]
-    format = 'JPEG'
-    options = {'quality': 70}
-
-
-class MediumSpec(ImageSpec):
-    processors = [
-        Thumbnail(600),
-    ]
-    format = 'JPEG'
-    options = {'quality': 70}
-
-
-PHOTOSLIB_PHOTO_SIZES = {
-    'thumb': {
-        'field': ImageSpecField(source='file', spec=ThumbSpec),
-        'name': 'thumbnail',
-    },
-    'medium': ImageSpecField(source='file', spec=MediumSpec),
-}
+PHOTOSLIB_PHOTO_SIZES = get_photo_sizes
 PHOTOSLIB_THUMB_FIELD = 'thumb'
-
-# IMAGEKIT_DEFAULT_CACHEFILE_BACKEND = 'imagekit.cachefiles.backends.Simple'
-
-IMAGEKIT_DEFAULT_CACHEFILE_BACKEND = 'imagekit.cachefiles.backends.Simple'
-IMAGEKIT_CACHEFILE_NAMER = 'imagekit.cachefiles.namers.hash'
-IMAGEKIT_CACHEFILE_DIR = 'CACHE/images'
-IMAGEKIT_DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
-IMAGEKIT_CACHE_PREFIX = 'imagekit:'
-IMAGEKIT_USE_MEMCACHED_SAFE_CACHE_KEY = True
-IMAGEKIT_CACHE_BACKEND = 'default'
-IMAGEKIT_CACHE_TIMEOUT = None

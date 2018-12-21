@@ -27,16 +27,6 @@ module.exports = {
   optimization: {
     namedModules: true,
     noEmitOnErrors: true,
-    // concatenateModules: true,
-    //splitChunks: {
-    //  cacheGroups: {
-    //    commons: {
-    //      test: /[\\/]node_modules[\\/]/,
-    //      name: 'vendor',
-    //      chunks: 'all',
-    //    },
-    //  },
-    //},
   },
   stats: {
     cached: false,
