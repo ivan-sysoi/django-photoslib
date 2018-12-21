@@ -36,7 +36,7 @@ def update_photos_refcount(model_column_list):
             SELECT photo_id, count(*) AS photo_count
             FROM (
                 {photo_rel_sql}
-            )
+            ) p_rel
             GROUP  BY 1
         ) ct on {photos_table}.id = ct.photo_id
     """.format(
@@ -45,13 +45,12 @@ def update_photos_refcount(model_column_list):
     )
 
     update_sql = """
-                UPDATE {table} SET (ref_count) = (
-                    SELECT photo_count from (
-                        {select_ref_count_sql}
-                    ) q where {table}.id = q.photo_id
-                )
-            
-            """.format(
+        UPDATE {table} SET (ref_count) = (
+            SELECT photo_count from (
+                {select_ref_count_sql}
+            ) q where {table}.id = q.photo_id
+        )            
+    """.format(
         table=Photo._meta.db_table,
         select_ref_count_sql=select_ref_count_sql
     )
