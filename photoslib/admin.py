@@ -31,7 +31,7 @@ class PhotoAdmin(admin.ModelAdmin):
     )
 
     def thumb(self, obj):
-        return mark_safe('<img width="300" src="{}">'.format(getattr(obj, settings.PHOTOSLIB_THUMB_FIELD).url))
+        return mark_safe('<img style="max-width: 300px;" src="{}">'.format(getattr(obj, settings.PHOTOSLIB_THUMB_FIELD).url))
 
     thumb.short_description = _('Thumbnail')
 
