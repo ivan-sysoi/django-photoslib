@@ -4,13 +4,15 @@ from functools import wraps
 from io import BytesIO
 
 from PIL import Image
-from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
-from pilkit.processors import Transpose, ProcessorPipeline
+from pilkit.processors import Transpose
 from pilkit.utils import save_image
 
+from .fields import PhotoProcessorMixin
 from .models import Photo
+from .utils import validate_photo_file
 
 __all__ = ('base_upload', 'rotate_left', 'rotate_right')
 
@@ -58,12 +60,8 @@ def get_objects_from_request(single=False):
     return decorator
 
 
-def base_upload(processors=None, format=None, options=None, autoconvert=None):
-    options = options or {
-        'quality': settings.PHOTOSLIB_QUALITY,
-        'optimized': True,
-    }
-    processor_pipeline = ProcessorPipeline(processors or [])
+def base_upload(photo_field):
+    assert isinstance(photo_field, PhotoProcessorMixin), 'photo_field must be instance of PhotoProcessorMixin'
 
     @require_http_methods(['POST'])
     @is_authenticated
@@ -73,16 +71,12 @@ def base_upload(processors=None, format=None, options=None, autoconvert=None):
         if not file:
             return HttpResponseBadRequest('No file')
 
-        if not file.content_type.startswith('image/'):
-            return HttpResponseBadRequest('Invalid type')
+        try:
+            validate_photo_file(file)
+        except ValidationError as e:
+            return HttpResponseBadRequest(e.message)
 
-        if file.size > settings.PHOTOSLIB_MAX_SIZE:
-            return HttpResponseBadRequest('Too big size')
-
-        img = Image.open(file)
-        img = processor_pipeline.process(img)
-        buff = save_image(img, BytesIO(), format or img.format or 'JPEG', options=options, autoconvert=autoconvert)
-        photo = Photo.objects.create_from_buffer(buff, format)
+        photo = Photo.objects.create_from_buffer(*photo_field.process_file(file))
         return JsonResponse(photo.serialize())
 
     return upload

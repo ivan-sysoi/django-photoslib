@@ -1,7 +1,10 @@
 import xxhash
 from django.apps import apps
+from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
-__all__ = ('get_hash', 'get_photo_relations')
+__all__ = ('get_hash', 'get_photo_relations', 'validate_photo_file')
 
 
 def get_hash(input):
@@ -20,3 +23,11 @@ def get_photo_relations():
                 models_with_photos.append((model_cls, field))
 
     return models_with_photos
+
+
+def validate_photo_file(file):
+    if not file.content_type.startswith('image/'):
+        raise ValidationError(_('Invalid type'))
+
+    if file.size > settings.PHOTOSLIB_MAX_SIZE:
+        raise ValidationError(_('Too big size'))

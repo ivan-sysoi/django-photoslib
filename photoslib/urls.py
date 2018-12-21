@@ -1,6 +1,6 @@
 from django.urls import path
 
-from photoslib.utils import get_photo_relations
+from .utils import get_photo_relations
 from . import views
 
 urlpatterns = [
@@ -13,7 +13,7 @@ for model_cls, field in get_photo_relations():
     urlpatterns.append(
         path(
             'upload/{}/{}'.format(model_cls._meta.model_name, field.name),
-            views.base_upload(**field.process_image_kwargs),
+            views.base_upload(field),
             name='photo-upload-{}-{}'.format(model_cls._meta.model_name, field.name)
         )
     )

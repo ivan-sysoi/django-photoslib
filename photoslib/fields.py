@@ -1,12 +1,16 @@
 import json
+from io import BytesIO
 
+from PIL import Image
 from django.conf import settings
 from django.db import models
 from django.forms import Widget
 from django.urls import reverse
 from django.utils.translation import ugettext as _
+from pilkit.processors import ProcessorPipeline
+from pilkit.utils import save_image
 
-__all__ = ('PhotoField', 'PhotoFieldWidget', 'ManyPhotosField')
+__all__ = ('PhotoField', 'PhotoFieldWidget', 'ManyPhotosField', 'PhotoProcessorMixin')
 
 
 class PhotoFieldWidget(Widget):
@@ -16,7 +20,7 @@ class PhotoFieldWidget(Widget):
         self.multiply = multiply
         self.model_name = model_name
         self.field_name = field_name
-        super(PhotoFieldWidget, self).__init__()
+        super().__init__()
 
     def __deepcopy__(self, memo):
         result = super().__deepcopy__(memo)
@@ -74,24 +78,45 @@ class PhotoFieldWidget(Widget):
         }
 
 
-class PhotoField(models.ForeignKey):
+class PhotoProcessorMixin:
+
+    def __init__(self, processors=None, format=None, options=None, autoconvert=True, **kwargs):
+        self.process_image_kwargs = dict(processors=processors, format=format, options=options, autoconvert=autoconvert)
+        super().__init__(**kwargs)
+
+    def process_file(self, file):
+        img = Image.open(file)
+        img = ProcessorPipeline(self.process_image_kwargs['processors'] or []).process(img)
+        options = self.process_image_kwargs['options'] or {
+            'quality': settings.PHOTOSLIB_QUALITY,
+            'optimized': True,
+        }
+        format = self.process_image_kwargs['format'] or img.format or 'JPEG'
+
+        if format.upper() == 'JPEG' and img.mode == 'RGBA':
+            img = img.convert(mode='RGB')
+
+        buff = save_image(img, BytesIO(), format, options=options, autoconvert=self.process_image_kwargs['autoconvert'])
+
+        return buff, format
+
+
+class PhotoField(PhotoProcessorMixin, models.ForeignKey):
 
     def __init__(self, processors=None, format=None, options=None, autoconvert=None, **kwargs):
         kwargs['to'] = 'photoslib.Photo'
         kwargs['on_delete'] = models.PROTECT
-        self.process_image_kwargs = dict(processors=processors, format=format, options=options, autoconvert=autoconvert)
-        super().__init__(**kwargs)
+        super().__init__(processors=processors, format=format, options=options, autoconvert=autoconvert, **kwargs)
 
     def formfield(self, **kwargs):
         kwargs['widget'] = PhotoFieldWidget(self.model._meta.model_name, self.name)
         return super().formfield(**kwargs)
 
 
-class ManyPhotosField(models.ManyToManyField):
+class ManyPhotosField(PhotoProcessorMixin, models.ManyToManyField):
     def __init__(self, processors=None, format=None, options=None, autoconvert=None, **kwargs):
         kwargs['to'] = 'photoslib.Photo'
-        self.process_image_kwargs = dict(processors=processors, format=format, options=options, autoconvert=autoconvert)
-        super().__init__(**kwargs)
+        super().__init__(processors=processors, format=format, options=options, autoconvert=autoconvert, **kwargs)
 
     def formfield(self, **kwargs):
         kwargs['widget'] = PhotoFieldWidget(self.model._meta.model_name, self.name, multiply=True)
