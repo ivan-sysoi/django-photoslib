@@ -7,12 +7,12 @@ from PIL import Image
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
-from pilkit.processors import Transpose
+from pilkit.processors import Transpose, ProcessorPipeline
 from pilkit.utils import save_image
 
 from .models import Photo
 
-__all__ = ('upload', 'rotate_left', 'rotate_right')
+__all__ = ('base_upload', 'rotate_left', 'rotate_right')
 
 
 def is_authenticated(fn):
@@ -58,29 +58,34 @@ def get_objects_from_request(single=False):
     return decorator
 
 
-@require_http_methods(['POST'])
-@is_authenticated
-def upload(request):
-    file = request.FILES.get('file')
-
-    if not file:
-        return HttpResponseBadRequest('No file')
-
-    if not file.content_type.startswith('image/'):
-        return HttpResponseBadRequest('Invalid type')
-
-    if file.size > settings.PHOTOSLIB_MAX_SIZE:
-        return HttpResponseBadRequest('Too big size')
-
-    img = Image.open(file)
-
-    format = file.content_type.split('/')[1]
-    buff = save_image(img, BytesIO(), format, options={
+def base_upload(processors=None, format=None, options=None, autoconvert=None):
+    options = options or {
         'quality': settings.PHOTOSLIB_QUALITY,
         'optimized': True,
-    })
-    photo = Photo.objects.create_from_buffer(buff, format)
-    return JsonResponse(photo.serialize())
+    }
+    processor_pipeline = ProcessorPipeline(processors or [])
+
+    @require_http_methods(['POST'])
+    @is_authenticated
+    def upload(request):
+        file = request.FILES.get('file')
+
+        if not file:
+            return HttpResponseBadRequest('No file')
+
+        if not file.content_type.startswith('image/'):
+            return HttpResponseBadRequest('Invalid type')
+
+        if file.size > settings.PHOTOSLIB_MAX_SIZE:
+            return HttpResponseBadRequest('Too big size')
+
+        img = Image.open(file)
+        img = processor_pipeline.process(img)
+        buff = save_image(img, BytesIO(), format or img.format or 'JPEG', options=options, autoconvert=autoconvert)
+        photo = Photo.objects.create_from_buffer(buff, format)
+        return JsonResponse(photo.serialize())
+
+    return upload
 
 
 @require_http_methods(['GET'])

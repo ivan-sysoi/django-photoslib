@@ -1,4 +1,5 @@
 from django.db import models
+from pilkit.processors import AddBorder
 
 from photoslib.fields import PhotoField, ManyPhotosField
 
@@ -13,7 +14,7 @@ class TestModel(models.Model):
 
 class Test2Model(models.Model):
     name = models.CharField(max_length=128)
-    photo = PhotoField(null=True, blank=True)
+    photo = PhotoField(null=True, blank=True, format='JPEG', processors=[AddBorder(10)])
 
     def __str__(self):
         return self.name

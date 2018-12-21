@@ -2,7 +2,6 @@ import datetime
 import os
 import time
 
-from django.apps import apps
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import connection
@@ -12,6 +11,7 @@ from django.utils import timezone
 
 from photoslib.fields import PhotoField, ManyPhotosField
 from photoslib.models import Photo
+from photoslib.utils import get_photo_relations
 
 
 def update_photos_refcount(model_column_list):
@@ -28,7 +28,7 @@ def update_photos_refcount(model_column_list):
             table = field.remote_field.through._meta.db_table
 
         photo_rel_sql.append("SELECT {col} as photo_id FROM {table}".format(col=col, table=table))
-    
+
     select_ref_count_sql = """
         SELECT {photos_table}.id as photo_id, COALESCE(ct.photo_count, 0) AS photo_count
         FROM {photos_table}
@@ -83,11 +83,7 @@ class Command(BaseCommand):
         verbose = options['verbosity'] > 0
         dry_run = options['dry_run']
 
-        models_with_photos = []
-        for model_cls in apps.get_models():
-            for field in model_cls._meta.get_fields():
-                if isinstance(field, (PhotoField, ManyPhotosField)):
-                    models_with_photos.append((model_cls, field))
+        models_with_photos = get_photo_relations()
 
         if verbose:
             self.stdout.write('Found relations:')
@@ -98,8 +94,8 @@ class Command(BaseCommand):
                 update_photos_refcount(models_with_photos)
 
                 total_deleted = 0
-                old_photos_qs = Photo.objects.filter(ref_count=0, 
-                                                     created__lte=timezone.now() - datetime.timedelta(hours=2)) 
+                old_photos_qs = Photo.objects.filter(ref_count=0,
+                                                     created__lte=timezone.now() - datetime.timedelta(hours=2))
                 for photo in old_photos_qs:
                     if verbose:
                         self.stdout.write('Delete photo #{}'.format(photo.id))

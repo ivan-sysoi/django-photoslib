@@ -34,7 +34,7 @@ class PhotoQuerySet(models.QuerySet):
             return existed_photo
 
         buff.seek(0)
-        return self.create(file=File(buff, name='{}.{}'.format(image_hash, format)), hash=image_hash)
+        return self.create(file=File(buff, name='{}.{}'.format(image_hash, format).lower()), hash=image_hash)
 
 
 def get_photo_upload_to(obj, filename):

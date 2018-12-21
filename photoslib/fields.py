@@ -12,13 +12,17 @@ __all__ = ('PhotoField', 'PhotoFieldWidget', 'ManyPhotosField')
 class PhotoFieldWidget(Widget):
     template_name = 'photoslib/widget.html'
 
-    def __init__(self, multiply=False):
+    def __init__(self, model_name, field_name, multiply=False):
         self.multiply = multiply
+        self.model_name = model_name
+        self.field_name = field_name
         super(PhotoFieldWidget, self).__init__()
 
     def __deepcopy__(self, memo):
         result = super().__deepcopy__(memo)
         result.multiply = self.multiply
+        result.model_name = self.model_name
+        result.field_name = self.field_name
         return result
 
     def get_context(self, name, value, attrs):
@@ -33,7 +37,7 @@ class PhotoFieldWidget(Widget):
         context.update({
             'apiOptions': json.dumps({
                 'getUrl': reverse('photo-get'),
-                'uploadUrl': reverse('photo-upload'),
+                'uploadUrl': reverse('photo-upload-{}-{}'.format(self.model_name, self.field_name)),
                 'rotateLeftUrl': reverse('photo-rotate-left'),
                 'rotateRightUrl': reverse('photo-rotate-right'),
             }),
@@ -72,21 +76,23 @@ class PhotoFieldWidget(Widget):
 
 class PhotoField(models.ForeignKey):
 
-    def __init__(self, **kwargs):
+    def __init__(self, processors=None, format=None, options=None, autoconvert=None, **kwargs):
         kwargs['to'] = 'photoslib.Photo'
         kwargs['on_delete'] = models.PROTECT
+        self.process_image_kwargs = dict(processors=processors, format=format, options=options, autoconvert=autoconvert)
         super().__init__(**kwargs)
 
     def formfield(self, **kwargs):
-        kwargs['widget'] = PhotoFieldWidget()
+        kwargs['widget'] = PhotoFieldWidget(self.model._meta.model_name, self.name)
         return super().formfield(**kwargs)
 
 
 class ManyPhotosField(models.ManyToManyField):
-    def __init__(self, **kwargs):
+    def __init__(self, processors=None, format=None, options=None, autoconvert=None, **kwargs):
         kwargs['to'] = 'photoslib.Photo'
+        self.process_image_kwargs = dict(processors=processors, format=format, options=options, autoconvert=autoconvert)
         super().__init__(**kwargs)
 
     def formfield(self, **kwargs):
-        kwargs['widget'] = PhotoFieldWidget(True)
+        kwargs['widget'] = PhotoFieldWidget(self.model._meta.model_name, self.name, multiply=True)
         return super().formfield(**kwargs)
