@@ -36,10 +36,35 @@
 .Button__Icon--17TyF {
   margin-right: 7px; }
 
+.PhotoUrl--yN45Z {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center; }
+
+.PhotoUrl__Input--ZUsdV {
+  position: absolute;
+  top: -100px;
+  left: -100px; }
+
+.PhotoUrl__Name--1nOYr {
+  font-weight: 800; }
+  .PhotoUrl__Name--1nOYr:after {
+    content: ':';
+    margin-right: 10px; }
+
 .Photo--waL7v {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex; }
+
+.Photo_sortable--10nNi {
+  cursor: move; }
+
+.Photo_dragging--1mbm9 {
+  opacity: 0.7; }
 
 .Photo__Urls--15pfK {
   margin-left: 10px;
@@ -50,25 +75,6 @@
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column; }
-
-.Photo__UrlLine--1NJr- {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center; }
-
-.Photo__UrlInput--2yGov {
-  position: absolute;
-  top: -100px;
-  left: -100px; }
-
-.Photo__UrlName--1xyvA {
-  font-weight: 800; }
-  .Photo__UrlName--1xyvA:after {
-    content: ':';
-    margin-right: 10px; }
 
 .Photo__Img--1iHmf {
   margin-bottom: 5px; }
@@ -86,6 +92,29 @@
       -ms-transform: scaleX(-1);
           transform: scaleX(-1); }
 
+.PhotosList--dI6qr {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column; }
+
+.PhotosList__Photo--dCiCq {
+  margin: 0 5px 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+
+.flip--28vIs {
+  -webkit-transform: scaleY(-1);
+      -ms-transform: scaleY(-1);
+          transform: scaleY(-1); }
+
+.react-css-collapse-transition {
+  -webkit-transition: height 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  -o-transition: height 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: height 250ms cubic-bezier(0.4, 0, 0.2, 1); }
+
 .PhotoField--2Gh2m {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -97,19 +126,6 @@
   -webkit-box-align: start;
       -ms-flex-align: start;
           align-items: flex-start; }
-
-.PhotoField__Photos--qplyX {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column; }
-
-.PhotoField__Photo--13Oej {
-  margin: 0 5px 15px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
 
 .PhotoField__UploadButton--2dLE8 {
   border: none; }

@@ -1,5 +1,6 @@
 <div id="{{ widget.attrs.id }}-widget">Loading...</div>
-<input type="hidden" id="{{ widget.attrs.id }}" name="{{ widget.name }}" value="{% if widget.value %}{{ widget.value }}{% endif %}">
+<input type="hidden" id="{{ widget.attrs.id }}" name="{{ widget.name }}"
+       value="{% if widget.value %}{{ widget.value }}{% endif %}">
 <script>
   if (window.__photoslibInit) {
     document.addEventListener('DOMContentLoaded', function () {

@@ -1,17 +1,13 @@
+:global {
+  .react-css-collapse-transition {
+    transition: height 250ms cubic-bezier(.4, 0, .2, 1);
+  }
+}
+
 .PhotoField {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.PhotoField__Photos {
-  display: flex;
-  flex-direction: column;
-}
-
-.PhotoField__Photo {
-  margin: 0 5px 15px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .PhotoField__UploadButton {

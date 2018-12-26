@@ -53,7 +53,7 @@ def get_objects_from_request(single=False):
             if single:
                 return fn(qs.first())
 
-            return fn(qs)
+            return fn(sorted(qs, key=lambda p: ids.index(p.id)))
 
         return wrapper
 

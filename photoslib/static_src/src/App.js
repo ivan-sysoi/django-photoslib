@@ -1,12 +1,15 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Dropzone from 'react-dropzone'
+import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContext } from 'react-dnd'
 
 import Button from 'components/Button'
-import Photo from 'components/Photo'
+import PhotosList from 'components/PhotosList'
 
 import styles from './styles.scss'
 import UploadSvg from '-!svg-react-loader!./upload.svg'
+
 
 class App extends PureComponent {
   static propTypes = {
@@ -14,15 +17,18 @@ class App extends PureComponent {
     photosApi: PropTypes.object.isRequired,
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
     messages: PropTypes.shape({
-      clear: PropTypes.string.isRequired,
+      show: PropTypes.string.isRequired,
+      hide: PropTypes.string.isRequired,
       upload: PropTypes.string.isRequired,
       uploadError: PropTypes.string.isRequired,
       criticalError: PropTypes.string.isRequired,
     }).isRequired,
     opts: PropTypes.shape({
+      appId: PropTypes.string.isRequired,
       maxSize: PropTypes.number.isRequired,
       thumbField: PropTypes.string.isRequired,
       multiply: PropTypes.bool.isRequired,
+      sortable: PropTypes.bool.isRequired,
     }).isRequired,
   }
 
@@ -150,6 +156,19 @@ class App extends PureComponent {
   onRotateLeft = this.rotate(true)
   onRotateRight = this.rotate(false)
 
+  onReorder = (startIndex, endIndex) => {
+    this.setState((prevState) => {
+      const newPhotos = [ ...prevState.photos ]
+      const [removed] = newPhotos.splice(startIndex, 1)
+      newPhotos.splice(endIndex, 0, removed)
+      return {
+        photos: newPhotos,
+      }
+    }, () => {
+      this.updateInputValue()
+    })
+  }
+
   render() {
     if (this.state.criticalError) {
       return this.props.messages.criticalError
@@ -159,24 +178,20 @@ class App extends PureComponent {
       <div
         className={styles.PhotoField}
       >
-        <div
-          className={styles.PhotoField__Photos}
-        >
-          {this.state.photos.map((photo, ind) => (
-            <Photo
-              className={styles.PhotoField__Photo}
-              key={photo.id}
-              onClear={this.onClearPhoto}
-              onRotateLeft={this.onRotateLeft}
-              onRotateRight={this.onRotateRight}
-              messages={this.props.messages}
-              disabled={this.state.loading}
-              photo={photo}
-              thumbField={this.props.opts.thumbField}
-              sizes={this.props.opts.sizes}
-            />
-          ))}
-        </div>
+        <PhotosList
+          appId={this.props.opts.appId}
+          photos={this.state.photos}
+          onReorder={this.onReorder}
+          onClear={this.onClearPhoto}
+          onRotateLeft={this.onRotateLeft}
+          onRotateRight={this.onRotateRight}
+          messages={this.props.messages}
+          disabled={this.state.loading}
+          thumbField={this.props.opts.thumbField}
+          sizes={this.props.opts.sizes}
+          sortable={this.props.opts.sortable}
+          collapsible={this.props.opts.multiply}
+        />
         {(this.props.opts.multiply || this.state.photos.length === 0) && (
           <Dropzone
             onDrop={this.onDrop}
@@ -208,10 +223,9 @@ class App extends PureComponent {
             {this.state.errors.map(({ mess, key }) => <li key={key}>{mess}</li>)}
           </ul>
         )}
-
       </div>
     )
   }
 }
 
-export default App
+export default  DragDropContext(HTML5Backend)(App)

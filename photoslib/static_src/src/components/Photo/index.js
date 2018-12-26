@@ -1,54 +1,14 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
+import { DragSource, DropTarget } from 'react-dnd'
 
 import Button from 'components/Button'
+import PhotoUrl from 'components/PhotoUrl'
 
 import RotateSvg from '-!svg-react-loader!./rotate.svg'
-import CopySvg from '-!svg-react-loader!./copy.svg'
+import DeleteSvg from '-!svg-react-loader!./delete.svg'
 import styles from './styles.scss'
-
-const copyText = id => () => {
-  document.getElementById(id).select()
-  document.execCommand('copy')
-}
-
-const PhotoUrl = ({ photo, field, name, disabled }) => {
-  const inputId = `photo${photo.id}${field}`
-  const url = photo[field]
-  return (
-    <div
-      className={styles.Photo__UrlLine}
-    >
-      <input
-        type="text"
-        value={url}
-        id={inputId}
-        className={styles.Photo__UrlInput}
-      />
-      <span
-        className={styles.Photo__UrlName}
-      >
-        {name}
-      </span>
-      <a
-        href={url}
-        target={field}
-      >
-        {url}
-      </a>
-      <Button
-        onClick={copyText(inputId)}
-        disabled={disabled}
-      >
-        <CopySvg
-          height={12}
-          fill="rgba(0, 0, 0, 0.4)"
-        />
-      </Button>
-    </div>
-  )
-}
 
 class Photo extends PureComponent {
 
@@ -63,9 +23,7 @@ class Photo extends PureComponent {
     onRotateLeft: PropTypes.func.isRequired,
     onRotateRight: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
-    messages: PropTypes.shape({
-      clear: PropTypes.string.isRequired,
-    }).isRequired,
+    sortable: PropTypes.bool.isRequired,
   }
 
   static defaultProps = {
@@ -85,60 +43,122 @@ class Photo extends PureComponent {
   }
 
   render() {
-    return (
-      <div
-        className={classnames(styles.Photo, this.props.className)}
-      >
-        <div>
-          <img
-            className={styles.Photo__Img}
-            src={this.props.photo[this.props.thumbField]}
-          />
+    const { connectDragPreview, connectDragSource, connectDropTarget, isDragging, sortable } = this.props
+
+    return connectDragSource && connectDropTarget && connectDragPreview && connectDragSource(connectDropTarget(
+      (
+        <div
+          className={classnames(
+            styles.Photo,
+            {
+              [styles.Photo_dragging]: isDragging,
+              [styles.Photo_sortable]: sortable,
+            },
+            this.props.className)}
+        >
+          <div>
+            {connectDragPreview(
+              <img
+                className={styles.Photo__Img}
+                src={this.props.photo[this.props.thumbField]}
+              />
+            )}
+            <div
+              className={styles.Photo__Actions}
+            >
+              <Button
+                onClick={this.clearPhoto}
+                disabled={this.props.disabled}
+              >
+                <DeleteSvg
+                  height={15}
+                  fill="rgba(0, 0, 0, 0.4)"
+                />
+              </Button>
+              <Button
+                onClick={this.rotateLeft}
+                disabled={this.props.disabled}
+              >
+                <RotateSvg
+                  height={15}
+                  fill="rgba(0, 0, 0, 0.4)"
+                  className={styles.flip}
+                />
+              </Button>
+              <Button
+                onClick={this.rotateRight}
+                disabled={this.props.disabled}
+              >
+                <RotateSvg
+                  height={15}
+                  fill="rgba(0, 0, 0, 0.4)"
+                />
+              </Button>
+            </div>
+          </div>
           <div
-            className={styles.Photo__Actions}
+            className={styles.Photo__Urls}
           >
-            <Button
-              onClick={this.clearPhoto}
-              disabled={this.props.disabled}
-            >
-              {this.props.messages.clear}
-            </Button>
-            <Button
-              onClick={this.rotateLeft}
-              disabled={this.props.disabled}
-            >
-              <RotateSvg
-                height={15}
-                fill="rgba(0, 0, 0, 0.4)"
-                className={styles.flip}
+            {Object.entries(this.props.sizes).map(([field, name]) => (
+              <PhotoUrl
+                key={field}
+                field={field}
+                name={name}
+                photo={this.props.photo}
               />
-            </Button>
-            <Button
-              onClick={this.rotateRight}
-              disabled={this.props.disabled}
-            >
-              <RotateSvg
-                height={15}
-                fill="rgba(0, 0, 0, 0.4)"
-              />
-            </Button>
+            ))}
           </div>
         </div>
-        <div
-          className={styles.Photo__Urls}
-        >
-          {Object.entries(this.props.sizes).map(([field, name]) => (
-            <PhotoUrl
-              key={field}
-              field={field}
-              name={name}
-              photo={this.props.photo}
-            />
-          ))}
-        </div>
-      </div>
-    )
+      )
+    ))
   }
 }
 
-export default Photo
+const PhotoType = 'Photo'
+
+const targetPhotoSpec = {
+  hover(props, monitor, component) {
+    if (!component || !monitor.getItem().sortable) {
+      return null
+    }
+    const dragIndex = monitor.getItem().index
+    const hoverIndex = props.index
+
+    if (dragIndex === hoverIndex) {
+      return
+    }
+    props.onReorder(dragIndex, hoverIndex)
+    monitor.getItem().index = hoverIndex
+  },
+}
+
+const targetCollect = connect => ({ connectDropTarget: connect.dropTarget() })
+
+const sourcePhotoSpec = {
+  beginDrag(props) {
+    return {
+      index: props.index,
+      sortable: props.sortable,
+    }
+  },
+}
+const sourcePhotoCollect = (connect, monitor) => {
+  return {
+    connectDragPreview: connect.dragPreview(),
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }
+}
+
+
+export default DropTarget(
+  PhotoType,
+  targetPhotoSpec,
+  targetCollect,
+)(
+  DragSource(
+    PhotoType,
+    sourcePhotoSpec,
+    sourcePhotoCollect,
+  )(Photo),
+)

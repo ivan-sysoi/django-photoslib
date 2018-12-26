@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Photoslib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-20 20:30+0000\n"
+"POT-Creation-Date: 2018-12-26 02:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Ivan Sysoi <ivan.sysoi@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,25 +28,29 @@ msgstr "Мініяцюра"
 msgid "Photo Library"
 msgstr "Фота бібліятэка"
 
-#: photoslib/fields.py:28
+#: photoslib/forms.py:33
 msgid "Original"
 msgstr "Арыгінал"
 
-#: photoslib/fields.py:41
-msgid "Clear"
-msgstr "Ачысціць"
-
-#: photoslib/fields.py:42
+#: photoslib/forms.py:46
 msgid "Upload Image"
 msgstr "Загрузіць фота"
 
-#: photoslib/fields.py:43
+#: photoslib/forms.py:47
 msgid "Critical error loading photo field"
 msgstr "Крытычная памылка загрузкі фота"
 
-#: photoslib/fields.py:44
+#: photoslib/forms.py:48
 msgid "Error during uploading image"
 msgstr "Памылка пры загрузцы фота"
+
+#: photoslib/forms.py:49
+msgid "Hide"
+msgstr "Схаваць"
+
+#: photoslib/forms.py:50
+msgid "Show"
+msgstr "Паказаць"
 
 #: photoslib/models.py:47
 msgid "Created"
@@ -75,3 +79,11 @@ msgstr "Фота"
 #: photoslib/models.py:70
 msgid "Photos"
 msgstr "Фатаграфіі"
+
+#: photoslib/utils.py:30
+msgid "Invalid file type"
+msgstr "Дрэнны тып файла"
+
+#: photoslib/utils.py:33
+msgid "Too big file size"
+msgstr "Завялікі памер файла"

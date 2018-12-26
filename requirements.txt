@@ -3,3 +3,4 @@ xxhash
 django-imagekit
 django-appconf
 Pillow
+django-sortedm2m

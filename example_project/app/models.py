@@ -1,7 +1,7 @@
 from django.db import models
 from pilkit.processors import AddBorder
 
-from photoslib.fields import PhotoField, ManyPhotosField
+from photoslib.fields import PhotoField, ManyPhotosField, SortableManyPhotosField
 
 
 class TestModel(models.Model):
@@ -23,6 +23,14 @@ class Test2Model(models.Model):
 class MultiplyPhotosModel(models.Model):
     name = models.CharField(max_length=128)
     photos = ManyPhotosField()
+
+    def __str__(self):
+        return self.name
+
+
+class SortableMultiplyPhotosModel(models.Model):
+    name = models.CharField(max_length=128)
+    photos = SortableManyPhotosField()
 
     def __str__(self):
         return self.name

@@ -5,6 +5,7 @@ Django App for managing photos based on django-imagekit.
 ## Features
 
 * Many-to-one, many-to-many relations
+* Sortable field on top of django-sortedm2m
 * Multiply upload
 * Image rotation
 * Custom image sizes and transformation with help of django-imagekit's ImageSpecField
@@ -19,7 +20,7 @@ Django App for managing photos based on django-imagekit.
 ```python
 from django.db import models
 from pilkit.processors import AddBorder
-from photoslib.fields import PhotoField, ManyPhotosField
+from photoslib.fields import PhotoField, ManyPhotosField, SortableManyPhotosField
 
 
 class MyModel(models.Model):
@@ -31,8 +32,24 @@ class MyModel(models.Model):
                                options={'quality': 60})
   
   m2m_photos = ManyPhotosField()
+  
+  sortable_m2m_photos = SortableManyPhotosField()
 
 ```
+## Installation
+
+Add imagekit, photoslib into INSTALLED_APPS.
+
+```python
+INSTALLED_APPS = [
+    ...
+    'imagekit',
+    'photoslib',
+]
+
+```
+
+
 
 ## Configuration
 

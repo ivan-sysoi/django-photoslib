@@ -9,7 +9,7 @@ from django.db.models import ForeignKey
 from django.db.transaction import atomic
 from django.utils import timezone
 
-from photoslib.fields import PhotoField, ManyPhotosField
+from photoslib.fields import PhotoField, ManyPhotosField, SortableManyPhotosField
 from photoslib.models import Photo
 from photoslib.utils import get_photo_relations
 
@@ -20,7 +20,7 @@ def update_photos_refcount(model_column_list):
         if isinstance(field, PhotoField):
             col = field.column
             table = model_cls._meta.db_table
-        elif isinstance(field, ManyPhotosField):
+        elif isinstance(field, (ManyPhotosField, SortableManyPhotosField)):
             col = tuple(filter(lambda f: isinstance(f, ForeignKey) and f.target_field.model == Photo,
                                field.remote_field.through._meta.get_fields()))
             assert len(col) == 1

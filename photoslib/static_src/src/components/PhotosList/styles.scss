@@ -1,0 +1,13 @@
+.PhotosList {
+  display: flex;
+  flex-direction: column;
+}
+
+.PhotosList__Photo {
+  margin: 0 5px 15px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.flip {
+  transform: scaleY(-1);
+}

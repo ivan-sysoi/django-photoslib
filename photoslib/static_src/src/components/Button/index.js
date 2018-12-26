@@ -12,6 +12,7 @@ class Button extends PureComponent {
     buttonRef: PropTypes.func,
     preventDefault: PropTypes.bool,
     className: PropTypes.string,
+    style: PropTypes.object,
     icon: PropTypes.element,
   }
 
@@ -36,6 +37,7 @@ class Button extends PureComponent {
         className={classnames(buttonStyles.Button)}
         disabled={this.props.disabled}
         ref={this.props.buttonRef}
+        style={this.props.style}
       >
         {this.props.icon && (
           <span
