@@ -6,6 +6,7 @@ import { DragDropContext } from 'react-dnd'
 
 import Button from 'components/Button'
 import PhotosList from 'components/PhotosList'
+import Spinner from 'components/Spinner'
 
 import styles from './styles.scss'
 import UploadSvg from '-!svg-react-loader!./upload.svg'
@@ -17,8 +18,6 @@ class App extends PureComponent {
     photosApi: PropTypes.object.isRequired,
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
     messages: PropTypes.shape({
-      show: PropTypes.string.isRequired,
-      hide: PropTypes.string.isRequired,
       upload: PropTypes.string.isRequired,
       uploadError: PropTypes.string.isRequired,
       criticalError: PropTypes.string.isRequired,
@@ -26,9 +25,9 @@ class App extends PureComponent {
     opts: PropTypes.shape({
       appId: PropTypes.string.isRequired,
       maxSize: PropTypes.number.isRequired,
-      thumbField: PropTypes.string.isRequired,
       multiply: PropTypes.bool.isRequired,
       sortable: PropTypes.bool.isRequired,
+      sizeNames: PropTypes.object.isRequired,
     }).isRequired,
   }
 
@@ -59,6 +58,7 @@ class App extends PureComponent {
     }
 
     if (ids) {
+      this.setState({ loading: true })
       this.props.photosApi
         .get(ids)
         .then((photos) => {
@@ -94,6 +94,7 @@ class App extends PureComponent {
   }
 
   uploadPhoto = (file) => {
+    this.setState({ loading: true })
     this.props.photosApi.upload(file)
       .then(photo => {
         if (!this.state.photos.find(p => p.id === photo.id)) {
@@ -131,6 +132,7 @@ class App extends PureComponent {
     return (id) => {
       const photoInd = this.state.photos.findIndex(p => p.id === id)
       if (photoInd !== -1) {
+        this.setState({ loading: true })
         apiMeth(id)
           .then((photo) => {
             this.setState(prevState => {
@@ -158,7 +160,7 @@ class App extends PureComponent {
 
   onReorder = (startIndex, endIndex) => {
     this.setState((prevState) => {
-      const newPhotos = [ ...prevState.photos ]
+      const newPhotos = [...prevState.photos]
       const [removed] = newPhotos.splice(startIndex, 1)
       newPhotos.splice(endIndex, 0, removed)
       return {
@@ -187,11 +189,11 @@ class App extends PureComponent {
           onRotateRight={this.onRotateRight}
           messages={this.props.messages}
           disabled={this.state.loading}
-          thumbField={this.props.opts.thumbField}
-          sizes={this.props.opts.sizes}
           sortable={this.props.opts.sortable}
           collapsible={this.props.opts.multiply}
+          sizeNames={this.props.opts.sizeNames}
         />
+        {this.state.loading && (<Spinner/>)}
         {(this.props.opts.multiply || this.state.photos.length === 0) && (
           <Dropzone
             onDrop={this.onDrop}
@@ -228,4 +230,4 @@ class App extends PureComponent {
   }
 }
 
-export default  DragDropContext(HTML5Backend)(App)
+export default DragDropContext(HTML5Backend)(App)

@@ -8,6 +8,26 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.flip {
+.PhotosListHeader {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  margin-bottom: 20px;
+  background-color: #79aec8;
+  cursor: pointer;
+  width: 100%;
+  color: #fff;
+}
+
+.PhotosListHeader__Btn {
+  background-color: transparent;
+}
+
+.PhotosListHeader__Icon {
+  fill: #fff;
+  margin-right: 10px;
+}
+
+.PhotosListHeader__Icon_flip {
   transform: scaleY(-1);
 }

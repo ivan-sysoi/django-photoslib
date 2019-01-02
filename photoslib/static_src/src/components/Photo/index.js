@@ -13,22 +13,61 @@ import styles from './styles.scss'
 class Photo extends PureComponent {
 
   static propTypes = {
+
     photo: PropTypes.shape({
       id: PropTypes.number.isRequired,
+      file: PropTypes.string.isRequired,
+      thumb: PropTypes.string.isRequired,
     }).isRequired,
-    sizes: PropTypes.objectOf(PropTypes.string).isRequired,
-    thumbField: PropTypes.string.isRequired,
     className: PropTypes.string,
     onClear: PropTypes.func.isRequired,
     onRotateLeft: PropTypes.func.isRequired,
     onRotateRight: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
     sortable: PropTypes.bool.isRequired,
+    messages: PropTypes.shape({
+      original: PropTypes.string.isRequired,
+    }).isRequired,
+    sizeNames: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
     disabled: false,
   }
+
+  static getDerivedStateFromProps = (props, state) => {
+    if ((state || {}).propsPhoto !== props.photo) {
+      const sizes = []
+
+      if (props.photo) {
+        if (props.photo.file) {
+          sizes.push({
+            id: `${props.photo.id}-file`,
+            name: props.messages.original,
+            url: props.photo.file,
+          })
+        }
+        if (props.photo.sizes) {
+          Object.entries(props.photo.sizes).forEach(([size, url]) => {
+            sizes.push({
+              id: `${props.photo.id}-${size}`,
+              name: props.sizeNames[size] || size,
+              url,
+            })
+          })
+        }
+      }
+
+      return {
+        propsPhoto: props.photo,
+        sizes,
+      }
+    }
+
+    return null
+  }
+
+  state = {}
 
   clearPhoto = () => {
     this.props.onClear(this.props.photo.id)
@@ -56,11 +95,12 @@ class Photo extends PureComponent {
             },
             this.props.className)}
         >
-          <div>
+          <div
+            className={styles.Photo__Img}
+          >
             {connectDragPreview(
               <img
-                className={styles.Photo__Img}
-                src={this.props.photo[this.props.thumbField]}
+                src={this.props.photo.thumb}
               />
             )}
             <div
@@ -99,12 +139,12 @@ class Photo extends PureComponent {
           <div
             className={styles.Photo__Urls}
           >
-            {Object.entries(this.props.sizes).map(([field, name]) => (
+            {this.state.sizes.map(({ name, url, id }) => (
               <PhotoUrl
-                key={field}
-                field={field}
+                key={id}
+                id={id}
                 name={name}
-                photo={this.props.photo}
+                url={url}
               />
             ))}
           </div>

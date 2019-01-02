@@ -1,0 +1,45 @@
+$color: rgba(0, 0, 0, 0.1);
+$width: 40px;
+$height: 40px;
+
+.Spinner {
+  display: inline-block;
+  position: relative;
+  width: $width;
+  height: $height;
+  //margin: 0 auto;
+}
+
+.Spinner__Inner {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+
+  width: $width / 1.5;
+  height: $height / 1.5;
+  border-width: 2px;
+
+  margin: 6px;
+  border-style: solid;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: $color transparent transparent transparent;
+  &_1 {
+    animation-delay: -0.45s;
+  }
+  &_2 {
+    animation-delay: -0.3s;
+  }
+  &_3 {
+    animation-delay: -0.15s;
+  }
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

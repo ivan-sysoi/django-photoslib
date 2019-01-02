@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Photoslib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-26 02:05+0000\n"
+"POT-Creation-Date: 2018-12-30 23:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Ivan Sysoi <ivan.sysoi@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,29 +28,25 @@ msgstr "Мініяцюра"
 msgid "Photo Library"
 msgstr "Фота бібліятэка"
 
-#: photoslib/forms.py:33
+#: photoslib/forms.py:50
+msgid "Count"
+msgstr "Колькасць"
+
+#: photoslib/forms.py:51
 msgid "Original"
 msgstr "Арыгінал"
 
-#: photoslib/forms.py:46
+#: photoslib/forms.py:52
 msgid "Upload Image"
 msgstr "Загрузіць фота"
 
-#: photoslib/forms.py:47
+#: photoslib/forms.py:53
 msgid "Critical error loading photo field"
 msgstr "Крытычная памылка загрузкі фота"
 
-#: photoslib/forms.py:48
+#: photoslib/forms.py:54
 msgid "Error during uploading image"
 msgstr "Памылка пры загрузцы фота"
-
-#: photoslib/forms.py:49
-msgid "Hide"
-msgstr "Схаваць"
-
-#: photoslib/forms.py:50
-msgid "Show"
-msgstr "Паказаць"
 
 #: photoslib/models.py:47
 msgid "Created"
@@ -68,15 +64,15 @@ msgstr "Хэш"
 msgid "Count of references"
 msgstr "Колькасць спасылак"
 
-#: photoslib/models.py:65
+#: photoslib/models.py:55
 msgid "Photo {}"
 msgstr "Фота {}"
 
-#: photoslib/models.py:69
+#: photoslib/models.py:59
 msgid "Photo"
 msgstr "Фота"
 
-#: photoslib/models.py:70
+#: photoslib/models.py:60
 msgid "Photos"
 msgstr "Фатаграфіі"
 

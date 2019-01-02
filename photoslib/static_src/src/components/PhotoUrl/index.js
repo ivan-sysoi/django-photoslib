@@ -18,9 +18,8 @@ const cutUrl = (url) => {
   return url
 }
 
-const PhotoUrl = ({ photo, field, name, disabled }) => {
-  const inputId = `photo${photo.id}${field}`
-  const url = photo[field]
+const PhotoUrl = ({ id, url, name, disabled }) => {
+  const inputId = `photo${id}`
   return (
     <div
       className={styles.PhotoUrl}
@@ -38,7 +37,7 @@ const PhotoUrl = ({ photo, field, name, disabled }) => {
       </span>
       <a
         href={url}
-        target={field}
+        target={id}
       >
         {cutUrl(url)}
       </a>
@@ -56,11 +55,9 @@ const PhotoUrl = ({ photo, field, name, disabled }) => {
 }
 
 PhotoUrl.propTypes = {
-  photo: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-  }).isRequired,
-  field: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
 }
 

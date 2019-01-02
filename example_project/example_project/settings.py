@@ -128,6 +128,22 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
 
 def get_photo_sizes():
     from imagekit import ImageSpec
@@ -159,3 +175,4 @@ def get_photo_sizes():
 
 PHOTOSLIB_PHOTO_SIZES = get_photo_sizes
 PHOTOSLIB_THUMB_FIELD = 'thumb'
+PHOTOSLIB_PHOTO_SERIALIZE_HANDLER = 'app.utils.custom_photo_serializer'

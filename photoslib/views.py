@@ -1,42 +1,55 @@
 import json
 import os
-from functools import wraps
+from functools import wraps, lru_cache
 from io import BytesIO
 
 from PIL import Image
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseBadRequest, HttpResponseForbidden, JsonResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from pilkit.processors import Transpose
 from pilkit.utils import save_image
 
 from .fields import PhotoProcessorMixin
 from .models import Photo
-from .utils import validate_photo_file
+from .utils import validate_photo_file, serialize_photo
 
 __all__ = ('base_upload', 'rotate_left', 'rotate_right')
 
 
-def is_authenticated(fn):
-    @wraps(fn)
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_anonymous:
-            return HttpResponseForbidden()
-        return fn(request, *args, **kwargs)
+def default_check_perm(request, **kwargs):
+    return request.user.is_authenticated
 
-    return wrapper
+
+def is_permitted(action):
+    check_perm = settings.PHOTOSLIB_CHECK_PERMISSION or default_check_perm
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(request, **kwargs):
+            if not check_perm(request, action=action, **kwargs):
+                return HttpResponseForbidden()
+            return fn(request, **kwargs)
+        return wrapper
+
+    return decorator
+
+
+def parse_ids(ids):
+    if isinstance(ids, str):
+        ids = ids.split(',')
+    elif isinstance(ids, int):
+        ids = [ids]
+    assert ids
+    return tuple(map(lambda x: int(x), ids))
 
 
 def get_objects_from_request(single=False):
     def decorator(fn):
-        def parse_ids(ids):
-            if isinstance(ids, str):
-                ids = ids.split(',')
-            assert ids
-            return tuple(map(lambda x: int(x), ids))
-
         @wraps(fn)
-        def wrapper(request, *args, **kwargs):
+        def wrapper(request):
             try:
                 if request.method == 'GET':
                     ids = request.GET['ids']
@@ -46,14 +59,20 @@ def get_objects_from_request(single=False):
             except (ValueError, KeyError, AssertionError):
                 return HttpResponseBadRequest('Invalid request data')
 
-            qs = Photo.objects.filter(id__in=ids).all()
-            if qs.count() != len(ids):
-                raise Http404
+            if len(ids) != 1 and single:
+                return HttpResponseBadRequest('Invalid request data')
 
-            if single:
-                return fn(qs.first())
+            @lru_cache()
+            def get_photos():
+                photos = Photo.objects.filter(id__in=ids).all()
+                if len(photos) != len(ids):
+                    raise Http404
+                return sorted(photos, key=lambda p: ids.index(p.id))
 
-            return fn(sorted(qs, key=lambda p: ids.index(p.id)))
+            def get_photo():
+                return get_photos()[0]
+
+            return fn(request, get_photos=get_photos, get_photo=get_photo)
 
         return wrapper
 
@@ -63,30 +82,30 @@ def get_objects_from_request(single=False):
 def base_upload(photo_field):
     assert isinstance(photo_field, PhotoProcessorMixin), 'photo_field must be instance of PhotoProcessorMixin'
 
+    @csrf_exempt
     @require_http_methods(['POST'])
-    @is_authenticated
+    @is_permitted(action='upload')
     def upload(request):
         file = request.FILES.get('file')
 
         if not file:
             return HttpResponseBadRequest('No file')
-
         try:
             validate_photo_file(file)
         except ValidationError as e:
             return HttpResponseBadRequest(e.message)
 
         photo = Photo.objects.create_from_buffer(*photo_field.process_file(file))
-        return JsonResponse(photo.serialize())
+        return JsonResponse(serialize_photo(photo, request=request))
 
     return upload
 
-
+@csrf_exempt
 @require_http_methods(['GET'])
-@is_authenticated
 @get_objects_from_request()
-def retrieve(qs):
-    return JsonResponse(tuple(p.serialize() for p in qs), safe=False)
+@is_permitted(action='retrieve')
+def retrieve(request, get_photos, **kwargs):
+    return JsonResponse(tuple(serialize_photo(photo, request=request) for photo in get_photos()), safe=False)
 
 
 def base_rotate(left):
@@ -95,30 +114,22 @@ def base_rotate(left):
     else:
         processor = Transpose(Transpose.ROTATE_270)
 
-    def rotate(photo):
+    @csrf_exempt
+    @require_http_methods(['POST'])
+    @get_objects_from_request(single=True)
+    @is_permitted(action='rotate')
+    def rotate(request, get_photo, **kwargs):
+        photo = get_photo()
         img = Image.open(photo.file.path)
         new_img = processor.process(img)
 
         format = os.path.splitext(photo.file.path)[1][1:]
         buff = save_image(new_img, BytesIO(), format)
-        photo = Photo.objects.create_from_buffer(buff, format)
-        return JsonResponse(photo.serialize())
+        new_photo = Photo.objects.create_from_buffer(buff, format)
+        return JsonResponse(serialize_photo(new_photo, request=request))
 
     return rotate
 
 
-rotate_left = require_http_methods(['POST'])(
-    is_authenticated(
-        get_objects_from_request(single=True)(
-            base_rotate(left=True)
-        )
-    )
-)
-
-rotate_right = require_http_methods(['POST'])(
-    is_authenticated(
-        get_objects_from_request(single=True)(
-            base_rotate(left=False)
-        )
-    )
-)
+rotate_left = base_rotate(left=True)
+rotate_right = base_rotate(left=False)

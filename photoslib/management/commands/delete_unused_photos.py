@@ -93,8 +93,10 @@ class Command(BaseCommand):
                 update_photos_refcount(models_with_photos)
 
                 total_deleted = 0
-                old_photos_qs = Photo.objects.filter(ref_count=0,
-                                                     created__lte=timezone.now() - datetime.timedelta(hours=2))
+                old_photos_qs = Photo.objects.filter(
+                    ref_count=0,
+                    created__lte=timezone.now() - settings.PHOTOSLIB_UNBOUND_PHOTO_LIFETIME
+                )
                 for photo in old_photos_qs:
                     if verbose:
                         self.stdout.write('Delete photo #{}'.format(photo.id))

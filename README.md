@@ -107,6 +107,33 @@ PHOTOSLIB_THUMB_FIELD = 'file'
 PHOTOSLIB_ROOT = 'photos/{year}/{month}/{day}/'
 ```
 
+### Unbound photo lifetime
+
+Lifetime of unbound photo. 
+It is used in **delete_unused_photos** command to determine which photos to delete.
+
+```python
+PHOTOSLIB_UNBOUND_PHOTO_LIFETIME = datetime.timedelta(hours=2)
+```
+
+### Customize views permissions
+
+```python
+def check_perm(request, *, action, **kwargs):
+    if action == 'upload':
+        return request.user.is_authenticated
+    elif action == 'retrieve':
+        photos = kwargs['get_photos']()
+        # workflow
+    elif action == 'rotate':
+        photo = kwargs['get_photo']()
+        # workflow
+    
+    return False
+
+PHOTOSLIB_CHECK_PERMISSION = check_perm
+```
+
 
 ### React libraries urls
 
@@ -124,6 +151,7 @@ Photos are immutable, that means if you rotate the image a new copy will be crea
 
 You need to run **delete_unused_photos** command to delete unused photos. 
 
-Unused photo is a photo with *Photo.ref_count* = 0 and created more than 2 hours ago.
+Unused photo is a photo with *Photo.ref_count* = 0 
+and older than *PHOTOSLIB_UNBOUND_PHOTO_LIFETIME*.
 
 *Photo.ref_count* will be updated every time you run **delete_unused_photos** command.

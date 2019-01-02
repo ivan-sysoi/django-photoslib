@@ -1,14 +1,14 @@
 import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Collapse from 'react-css-collapse'
+import classnames from 'classnames'
 
 import Photo from 'components/Photo'
-import Button from 'components/Button'
 
 import styles from './styles.scss'
 import ArrowDownSvg from '-!svg-react-loader!./arrow-down.svg'
 
-const getCLosed = (appId) => {
+const getClosed = (appId) => {
   const key = `${appId}-collapsible`
   return localStorage.getItem(key) === '0'
 }
@@ -26,12 +26,15 @@ class PhotosList extends PureComponent {
     })).isRequired,
     onReorder: PropTypes.func.isRequired,
     collapsible: PropTypes.bool.isRequired,
+    messages: PropTypes.shape({
+      count: PropTypes.string.isRequired,
+    }).isRequired,
   }
 
   static defaultProps = {}
 
   state = {
-    open: this.props.collapsible ? !getCLosed(this.props.appId) : true,
+    open: this.props.collapsible ? !getClosed(this.props.appId) : true,
   }
 
   toggle = () => {
@@ -43,21 +46,26 @@ class PhotosList extends PureComponent {
   }
 
   render() {
-    const { photos, collapsible, messages, ...props } = this.props
+    const { photos, collapsible, ...props } = this.props
 
     return (
       <Fragment>
-        {this.props.collapsible && (
-          <Button
+        {collapsible && (
+          <div
+            className={styles.PhotosListHeader}
             onClick={this.toggle}
-            icon={<ArrowDownSvg
-              height={18}
-              fill="rgba(0, 0, 0, 0.4)"
-              className={this.state.open && styles.flip}
-            />}
           >
-            {this.state.open ? messages.hide : messages.show}
-          </Button>
+            <ArrowDownSvg
+              height={18}
+              className={classnames(
+                styles.PhotosListHeader__Icon,
+                this.state.open && styles.PhotosListHeader__Icon_flip
+              )}
+            />
+            <span>
+              {this.props.messages.count}: {this.props.photos.length}
+            </span>
+          </div>
         )}
         <Collapse
           isOpen={this.state.open}

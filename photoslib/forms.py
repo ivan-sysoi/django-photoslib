@@ -29,39 +29,39 @@ class PhotoFieldWidget(Widget):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
 
-        sizes = {
-            'file': _('Original'),
-        }
-        for name, field in settings.PHOTOSLIB_PHOTO_SIZES.items():
-            sizes[name] = field['name'] if isinstance(field, dict) and 'name' in field else name
+        size_names = {}
+        for field_name, field in settings.PHOTOSLIB_PHOTO_SIZES.items():
+            if isinstance(field, dict) and 'name' in field:
+                size_names[field_name] = field['name']
+
+        if settings.PHOTOSLIB_URL_NAMESPACE is not None:
+            url_namespace = '{}:'.format(settings.PHOTOSLIB_URL_NAMESPACE)
+        else:
+            url_namespace = ''
 
         context.update({
             'apiOptions': json.dumps({
-                'getUrl': reverse('photo-get'),
-                'uploadUrl': reverse('photo-upload-{}-{}'.format(self.model_name, self.field_name)),
-                'rotateLeftUrl': reverse('photo-rotate-left'),
-                'rotateRightUrl': reverse('photo-rotate-right'),
+                'getUrl': reverse('{}photo-get'.format(url_namespace)),
+                'uploadUrl': reverse('{}photo-upload-{}-{}'.format(url_namespace, self.model_name, self.field_name)),
+                'rotateLeftUrl': reverse('{}photo-rotate-left'.format(url_namespace)),
+                'rotateRightUrl': reverse('{}photo-rotate-right'.format(url_namespace)),
             }),
             'messages': json.dumps({
+                'count': _('Count'),
+                'original': _('Original'),
                 'upload': _('Upload Image'),
                 'criticalError': _('Critical error loading photo field'),
                 'uploadError': _('Error during uploading image'),
-                'hide': _('Hide'),
-                'show': _('Show'),
             }),
             'opts': json.dumps({
                 'appId': 'photoslib-{}-{}'.format(self.model_name, self.field_name),
                 'multiply': self.multiply,
                 'sortable': self.sortable,
                 'maxSize': settings.PHOTOSLIB_MAX_SIZE,
-                'thumbField': settings.PHOTOSLIB_THUMB_FIELD,
-                'sizes': sizes,
+                'sizeNames':  size_names,
             })
         })
         return context
-
-    def clean(self):
-        pass
 
     def value_from_datadict(self, data, files, name):
         if self.multiply:

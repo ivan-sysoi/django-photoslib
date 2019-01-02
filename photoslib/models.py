@@ -51,16 +51,6 @@ class Photo(models.Model, metaclass=PhotoModelBase):
 
     objects = PhotoQuerySet.as_manager()
 
-    def serialize(self):
-        return dict({
-            **{
-                size: getattr(self, size).url
-                for size in settings.PHOTOSLIB_PHOTO_SIZES.keys()
-            },
-            'id': self.id,
-            'file': self.file.url,
-        })
-
     def __str__(self):
         return _('Photo {}').format(self.pk)
 

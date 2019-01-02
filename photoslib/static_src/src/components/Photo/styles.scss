@@ -1,5 +1,6 @@
 .Photo {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .Photo_sortable {
@@ -11,18 +12,18 @@
 }
 
 .Photo__Urls {
-  margin-left: 10px;
   display: flex;
   flex-direction: column;
 }
 
 .Photo__Img {
-  margin-bottom: 5px;
+  margin: 0 10px 5px 0;
 }
 
 .Photo__Actions {
   display: flex;
   align-items: center;
+  margin: 5px 0 0 0;
 }
 
 .flip {

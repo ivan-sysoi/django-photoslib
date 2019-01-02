@@ -23,7 +23,7 @@ module.exports = {
     ],
   },
   entry: {
-    'photo-field': ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
+    'photo-field': ['@`', path.resolve(__dirname, 'src/index.js')],
   },
   externals: {
     react: 'React',

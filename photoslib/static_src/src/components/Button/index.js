@@ -34,7 +34,7 @@ class Button extends PureComponent {
     return (
       <button
         onClick={this.onClick}
-        className={classnames(buttonStyles.Button)}
+        className={classnames(buttonStyles.Button, this.props.className)}
         disabled={this.props.disabled}
         ref={this.props.buttonRef}
         style={this.props.style}
