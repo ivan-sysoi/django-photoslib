@@ -43,7 +43,7 @@ class App extends PureComponent {
 
   updateInputValue = () => {
     if (this.props.opts.multiply) {
-      this.props.input.value = this.state.photos.map(p => p.id).join(',')
+      this.props.input.value = JSON.stringify(this.state.photos.map(p => p.id))
     } else {
       this.props.input.value = this.state.photos.length > 0 ? this.state.photos[0].id : ''
     }
@@ -106,6 +106,10 @@ class App extends PureComponent {
             loading: false,
           }), () => {
             this.updateInputValue()
+          })
+        } else {
+          this.setState({
+            loading: false,
           })
         }
       }, (err) => {

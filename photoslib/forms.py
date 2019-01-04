@@ -65,7 +65,10 @@ class PhotoFieldWidget(Widget):
 
     def value_from_datadict(self, data, files, name):
         if self.multiply:
-            return tuple(map(int, filter(lambda x: x, data.get(name, '').split(','))))
+            try:
+                return json.loads(data.get(name, ''))
+            except (TypeError, json.decoder.JSONDecodeError):
+                return None
         return super().value_from_datadict(data, files, name)
 
     class Media:
