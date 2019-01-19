@@ -28,6 +28,7 @@ class PhotoModelBase(ModelBase):
 class PhotoQuerySet(models.QuerySet):
 
     def create_from_buffer(self, buff, format):
+        buff.seek(0)
         image_hash = get_hash(buff.read())
         existed_photo = self.model.objects.filter(hash=image_hash).first()
         if existed_photo is not None:

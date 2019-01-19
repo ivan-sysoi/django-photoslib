@@ -1,7 +1,9 @@
 .DS_Store
 .idea
+.tox
 *.pyc
 photoslib.egg-info
+tests/media
 example_project/db.sqlite3
 example_project/photoslib
 example_project/media

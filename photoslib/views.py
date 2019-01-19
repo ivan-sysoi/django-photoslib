@@ -20,7 +20,7 @@ __all__ = ('base_upload', 'rotate_left', 'rotate_right')
 
 
 def default_check_perm(request, **kwargs):
-    return request.user.is_authenticated
+    return hasattr(request, 'user') and request.user.is_authenticated
 
 
 def is_permitted(action):
@@ -41,9 +41,9 @@ def parse_ids(ids):
     if isinstance(ids, str):
         ids = ids.split(',')
     elif isinstance(ids, int):
-        ids = [ids]
+        ids = (ids,)
     assert ids
-    return tuple(map(lambda x: int(x), ids))
+    return tuple(map(int, ids))
 
 
 def get_objects_from_request(single=False):
