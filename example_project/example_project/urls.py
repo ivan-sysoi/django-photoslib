@@ -23,5 +23,8 @@ urlpatterns = [
     re_path('^' + settings.MEDIA_URL[1:] + '(.*)$', serve,
             {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
 
+    re_path('^' + settings.STATIC_URL[1:] + '(.*)$', serve,
+            {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
+
     path('photo-lib-api/', include('photoslib.urls'))
 ]

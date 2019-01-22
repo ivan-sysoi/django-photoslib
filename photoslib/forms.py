@@ -58,7 +58,7 @@ class PhotoFieldWidget(Widget):
                 'multiply': self.multiply,
                 'sortable': self.sortable,
                 'maxSize': settings.PHOTOSLIB_MAX_SIZE,
-                'sizeNames':  size_names,
+                'sizeNames': size_names,
             })
         })
         return context
@@ -66,9 +66,10 @@ class PhotoFieldWidget(Widget):
     def value_from_datadict(self, data, files, name):
         if self.multiply:
             try:
-                return json.loads(data.get(name, ''))
-            except (TypeError, json.decoder.JSONDecodeError):
-                return None
+                getter = data.getlist
+            except AttributeError:
+                getter = data.get
+            return getter(name)
         return super().value_from_datadict(data, files, name)
 
     class Media:

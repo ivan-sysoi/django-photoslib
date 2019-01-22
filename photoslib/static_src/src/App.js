@@ -16,7 +16,8 @@ class App extends PureComponent {
   static propTypes = {
     input: PropTypes.instanceOf(HTMLElement).isRequired,
     photosApi: PropTypes.object.isRequired,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.arrayOf(PropTypes.number)]),
+    inputName: PropTypes.string.isRequired,
+    initialValue: PropTypes.arrayOf(PropTypes.number).isRequired,
     messages: PropTypes.shape({
       upload: PropTypes.string.isRequired,
       uploadError: PropTypes.string.isRequired,
@@ -41,32 +42,15 @@ class App extends PureComponent {
     errors: [],
   }
 
-  updateInputValue = () => {
-    if (this.props.opts.multiply) {
-      this.props.input.value = JSON.stringify(this.state.photos.map(p => p.id))
-    } else {
-      this.props.input.value = this.state.photos.length > 0 ? this.state.photos[0].id : ''
-    }
-  }
-
   componentDidMount() {
-    let ids
-    if (Number.isInteger(this.props.value)) {
-      ids = [this.props.value]
-    } else if (Array.isArray(this.props.value) && this.props.value.length > 0) {
-      ids = this.props.value
-    }
-
-    if (ids) {
+    if (this.props.initialValue.length > 0) {
       this.setState({ loading: true })
       this.props.photosApi
-        .get(ids)
+        .get(this.props.initialValue)
         .then((photos) => {
           this.setState({
             photos,
             loading: false,
-          }, () => {
-            this.updateInputValue()
           })
         }, (err) => {
           console.error(err)
@@ -99,14 +83,9 @@ class App extends PureComponent {
       .then(photo => {
         if (!this.state.photos.find(p => p.id === photo.id)) {
           this.setState(prevState => ({
-            photos: [
-              ...prevState.photos,
-              photo,
-            ],
+            photos: [...prevState.photos, photo],
             loading: false,
-          }), () => {
-            this.updateInputValue()
-          })
+          }))
         } else {
           this.setState({
             loading: false,
@@ -126,9 +105,7 @@ class App extends PureComponent {
   onClearPhoto = (id) => {
     this.setState(prevState => ({
       photos: prevState.photos.filter(p => p.id !== id),
-    }), () => {
-      this.updateInputValue()
-    })
+    }))
   }
 
   rotate = (left) => {
@@ -148,8 +125,6 @@ class App extends PureComponent {
                 ],
                 loading: false,
               }
-            }, () => {
-              this.updateInputValue()
             })
           }, (err) => {
             console.error(err)
@@ -170,8 +145,6 @@ class App extends PureComponent {
       return {
         photos: newPhotos,
       }
-    }, () => {
-      this.updateInputValue()
     })
   }
 
@@ -229,6 +202,11 @@ class App extends PureComponent {
             {this.state.errors.map(({ mess, key }) => <li key={key}>{mess}</li>)}
           </ul>
         )}
+
+        {this.state.photos.map(({ id }, ind) => (
+          <input type="hidden" name={this.props.inputName} value={id} key={ind}/>
+        ))}
+
       </div>
     )
   }

@@ -4,23 +4,32 @@ import ReactDOM from 'react-dom'
 import createPhotosApi from './services/api'
 import App from './App'
 
-
-window.__photoslibInit = ({ rootElement, input, messages, apiOptions, opts, value }) => {
+window.__photoslibInit = ({ rootElement, inputName, messages, apiOptions, opts, initialValue }) => {
   const headers = (() => {
-    const value = '; ' + document.cookie
+    const value = `; ${document.cookie}`
     const parts = value.split('; csrftoken=')
     return {
-      'X-CSRFToken': parts.pop().split(';').shift()
+      'X-CSRFToken': parts.pop().split(';').shift(),
     }
   })()
 
   ReactDOM.render((
     <App
-      input={input}
+      inputName={inputName}
       photosApi={createPhotosApi({ ...apiOptions, headers })}
       opts={opts}
       messages={messages}
-      value={value}
+      initialValue={Number.isInteger(initialValue)
+        ? [initialValue]
+        : (
+          Array.isArray(initialValue)
+            ? initialValue
+            : []
+        )}
     />
   ), rootElement)
+
+  return function successCallback(callback) {
+    callback()
+  }
 }
