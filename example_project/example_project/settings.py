@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'photoslib', 'locale')
 ]
-# LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'ru'
 LANGUAGES = (
     ('ru', 'ru'),
     ('be', 'be'),
