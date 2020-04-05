@@ -13,7 +13,7 @@ const defaultBabelLoader = {
   options: {
     babelrc: true,
     extends: path.resolve(__dirname, '../.babelrc.js'),
-  }
+  },
 }
 
 const responsiveLoader = {
@@ -37,7 +37,7 @@ const svgReactLoader = {
       query: {
         classIdPrefix: '[name]-[hash:8]__',
       },
-    }
+    },
   ],
 }
 
@@ -127,45 +127,44 @@ const cssLoader = {
   ],
 }
 
-const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => {
-  return {
-    test,
-    exclude: /node_modules/,
-    use: [
-      MiniCssExtractPlugin.loader,
-      {
-        loader: 'css-loader',
-        options: {
-          ...(modules ? {
-            modules: true,
-            importLoaders: 3,
+const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => ({
+  test,
+  exclude: /node_modules/,
+  use: [
+    MiniCssExtractPlugin.loader,
+    {
+      loader: 'css-loader',
+      options: {
+        ...(modules ? {
+          modules: {
             localIdentName: '[local]--[hash:base64:5]',
-          } : {}),
-        },
-      },
-      {
-        loader: 'postcss-loader',
-        options: {
-          config: {
-            path: path.resolve(__dirname, '../'),
           },
+          importLoaders: 3,
+        } : {}),
+      },
+    },
+    {
+      loader: 'postcss-loader',
+      options: {
+        config: {
+          path: path.resolve(__dirname, '../'),
         },
       },
-      {
-        loader: 'resolve-url-loader',
-        options: {
-          keepQuery: true // <- this!
-        },
+    },
+    {
+      loader: 'resolve-url-loader',
+      options: {
+        keepQuery: true, // <- this!
       },
-      {
-        loader: 'sass-loader',
-        options: {
-          sourceMap: true,
-        },
+    },
+    {
+      loader: 'sass-loader',
+      options: {
+        sourceMap: true,
       },
-    ],
-  }
-}
+    },
+  ],
+})
 
 module.exports = {
   getSassLoader,

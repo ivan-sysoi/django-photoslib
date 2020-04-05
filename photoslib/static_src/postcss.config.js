@@ -2,9 +2,7 @@ module.exports = {
   plugins: {
     'postcss-zindex': {},
     'postcss-flexbugs-fixes': {},
-    'autoprefixer': {
-      browsers: ['last 3 versions', 'ie >= 9', 'Edge <= 15'],
-    },
+    'postcss-preset-env': {},
     'postcss-normalize': {},
     'postcss-combine-duplicated-selectors': {},
     'css-mqpacker': {},
