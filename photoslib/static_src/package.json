@@ -82,7 +82,7 @@
     "@babel/polyfill": "^7.2.5",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "react": "^16.7.0",
     "react-css-collapse": "^3.6.0",
     "react-dnd": "^7.0.2",
