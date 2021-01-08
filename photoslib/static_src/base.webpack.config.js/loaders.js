@@ -101,6 +101,25 @@ const fileLoader = {
   ],
 }
 
+const postcssLoader = {
+  loader: 'postcss-loader',
+  options: {
+    sourceMap: true,
+    postcssOptions: {
+      plugins: [
+        ['postcss-zindex', {}],
+        ['postcss-preset-env', {}],
+        ['postcss-normalize', {}],
+        ['postcss-combine-duplicated-selectors', {}],
+        ['css-mqpacker', {}],
+        ['postcss-mq-optimize', {}],
+        ['postcss-bem-linter', {}],
+        ['postcss-browser-reporter', {}],
+      ],
+    },
+  },
+}
+
 const cssLoader = {
   test: /\.css$/,
   use: [
@@ -112,15 +131,7 @@ const cssLoader = {
         importLoaders: 1,
       },
     },
-    {
-      loader: 'postcss-loader',
-      options: {
-        sourceMap: true,
-        config: {
-          path: path.resolve(__dirname, '../'),
-        },
-      },
-    },
+    postcssLoader,
     {
       loader: 'resolve-url-loader',
     },
@@ -143,14 +154,7 @@ const getSassLoader = ({ modules = true, test = /\.scss$/ } = {}) => ({
         } : {}),
       },
     },
-    {
-      loader: 'postcss-loader',
-      options: {
-        config: {
-          path: path.resolve(__dirname, '../'),
-        },
-      },
-    },
+    postcssLoader,
     {
       loader: 'resolve-url-loader',
       options: {
