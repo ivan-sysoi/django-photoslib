@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="django-photoslib",
-    version='0.0.7',
+    version='0.0.8',
     description=read('DESCRIPTION'),
     long_description=read('README.md'),
     license='MIT',
