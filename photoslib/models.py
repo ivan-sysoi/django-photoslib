@@ -5,10 +5,10 @@ from django.core.files import File
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-from .utils import get_hash
-from .conf import *
+from photoslib.utils import get_hash
+from photoslib.conf import PhotosLibConf
 
 __all__ = ('Photo',)
 
@@ -16,9 +16,9 @@ __all__ = ('Photo',)
 class PhotoModelBase(ModelBase):
 
     def __new__(mcs, class_name, bases, class_dict, parent=None, **kwargs):
-        if settings.PHOTOSLIB_PHOTO_SIZES:
+        if PhotosLibConf.PHOTO_SIZES:
             sizes_dict = {}
-            for name, field in settings.PHOTOSLIB_PHOTO_SIZES.items():
+            for name, field in PhotosLibConf.PHOTO_SIZES.items():
                 sizes_dict[name] = field['field'] if isinstance(field, dict) else field
             class_dict.update(sizes_dict)
         model_cls = super().__new__(mcs, class_name, bases, class_dict)

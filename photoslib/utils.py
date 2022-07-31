@@ -2,7 +2,7 @@ import xxhash
 from django.apps import apps
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 __all__ = ('get_hash', 'get_photo_relations', 'validate_photo_file', 'serialize_photo', 'default_photo_serializer')
 

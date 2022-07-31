@@ -1,9 +1,8 @@
 import datetime
 import importlib
 
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from appconf import AppConf
+from django.core.exceptions import ImproperlyConfigured
 
 __all__ = ('PhotosLibConf',)
 

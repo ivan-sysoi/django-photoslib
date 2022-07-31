@@ -14,6 +14,7 @@ settings.configure(**{
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     },
+    'SECRET_KEY': 'top_secret',
     'INSTALLED_APPS': [
         'django.contrib.admin',
         'django.contrib.auth',

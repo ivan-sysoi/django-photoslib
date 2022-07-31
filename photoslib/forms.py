@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from django.forms import Widget
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 __all__ = ('PhotoFieldWidget',)
 
